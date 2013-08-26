@@ -169,7 +169,6 @@ void testApp::draw(){
     }
     
     ofEnableAlphaBlending();
-    
     cam.end();
     
     vector<ofImage*>::iterator tit = loadedTextures.begin();
@@ -182,14 +181,12 @@ void testApp::draw(){
     }
     
     multilineTextInput.draw();
-    
     ofDrawBitmapString(output, ofVec2f(10, 650));
 }
 
 //--------------------------------------------------------------
 void testApp::keyPressed(int key)
-{   //4352
-    cout << key << endl;
+{
 }
 
 //--------------------------------------------------------------
@@ -251,9 +248,24 @@ void testApp::dragEvent(ofDragInfo dragInfo){
         
         if(name.find("png")!= string::npos || name.find("jpeg")!= string::npos || name.find("jpg")!= string::npos)
         {
-            ofImage *img = new ofImage();
-            img->loadImage(name);
-            loadedTextures.push_back(img);
+            
+            // are we replacing a current image?
+            
+            ofRectangle imageRect(900, 0, 100, loadedTextures.size() * 100);
+            if(imageRect.inside( dragInfo.position )) {
+                
+                int whichImage = (int) ( dragInfo.position.y / 100 );
+                delete loadedTextures.at( whichImage );
+                loadedTextures.at( whichImage ) = new ofImage();
+                loadedTextures.at( whichImage )->loadImage(name);
+                //loadedTextures.erase( loadedTextures.begin() + whichImage );
+                
+            } else {
+            
+                ofImage *img = new ofImage();
+                img->loadImage(name);
+                loadedTextures.push_back(img);
+            }
         }
         
         ++it;
