@@ -237,13 +237,24 @@ void testApp::dragEvent(ofDragInfo dragInfo){
             vector <string> ss = ofSplitString(name, ".");
             ofFile fShade(name);
             fragmentShader = ofToString(fShade.readToBuffer());
+            
+            if(shaderCurrentlyEditing == 1) {
+                multilineTextInput.text = fragmentShader;
+            }
+            
         }
         
         if(name.find(".vert") != string::npos || name.find(".vs") != string::npos)
         {
             vector <string> ss = ofSplitString(name, ".");
             ofFile vShade(name);
-            fragmentShader = ofToString(vShade.readToBuffer());
+            vertexShader = ofToString(vShade.readToBuffer());
+            
+            if(shaderCurrentlyEditing == 0) {
+                //vertexShader = multilineTextInput.text;
+                multilineTextInput.text = vertexShader;
+            }
+            
         }
         
         if(name.find("png")!= string::npos || name.find("jpeg")!= string::npos || name.find("jpg")!= string::npos)
