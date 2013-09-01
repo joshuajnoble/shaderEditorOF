@@ -73,6 +73,8 @@ class testApp : public ofBaseApp{
     void gotMessage(ofMessage msg);
     void guiEvent(ofxUIEventArgs &e);
     
+    ofTrueTypeFont andaleMono;
+    
     ofxTextInputField monoLineTextInput, multilineTextInput;
     ofShader shader;
 

@@ -41,9 +41,11 @@ void testApp::setup(){
     shaderCurrentlyEditing = 0;
     removeOnNextUpdate = addLabelOnNextUpdate = false;
     
+    andaleMono.loadFont("font/Andale Mono.ttf", 12);
+    multilineTextInput.setFont(andaleMono);
     
     vertexShader = "varying vec2 texcoord; \nvoid main() { \ntexcoord = gl_MultiTexCoord0.xy * 100.0; gl_Position = ftransform(); \n}";
-    fragmentShader = "uniform sampler2DRect dof; \nvarying vec2 texcoord;\nvoid main() { \ngl_FragColor = texture2DRect( dof, texcoord.xy ); \n}";
+    fragmentShader = "uniform sampler2DRect tex0; \nvarying vec2 texcoord;\nvoid main() { \ngl_FragColor = texture2DRect( tex0, texcoord.xy ); \n}";
 }
 
 //--------------------------------------------------------------
