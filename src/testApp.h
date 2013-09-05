@@ -72,6 +72,7 @@ class testApp : public ofBaseApp{
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void guiEvent(ofxUIEventArgs &e);
+    void uniformGuiEvent(ofxUIEventArgs &e);
     
     ofTrueTypeFont andaleMono;
     
@@ -85,7 +86,7 @@ class testApp : public ofBaseApp{
     string output;
 
     ofPtr<ofBaseLoggerChannel> shaderResultLogger;
-    ofxUICanvas *gui;
+    ofxUICanvas *gui, *uniformGUI;
     
     ofEasyCam cam;
     

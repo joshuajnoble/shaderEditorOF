@@ -32,11 +32,30 @@ void testApp::setup(){
     gui->addLabelButton("plane", false);
     gui->addLabelButton("Add Uniform", false);
     
-    
     ofAddListener(gui->newGUIEvent,this,&testApp::guiEvent);
     
     gui->setColorBack(ofColor(0,100));
     gui->setWidgetColor(OFX_UI_WIDGET_COLOR_BACK, ofColor(255,100));
+    
+    uniformGUI = new ofxUICanvas(240, 0, 250, 100);
+    
+    ofAddListener(uniformGUI->newGUIEvent,this,&testApp::uniformGuiEvent);
+    
+    uniformGUI->addTextInput("Uniform Name", "Uniform Name");
+    vector<string> uniformTypes;
+    uniformTypes.push_back("int");
+    uniformTypes.push_back("float");
+    uniformTypes.push_back("vec2");
+    uniformTypes.push_back("vec3");
+    uniformTypes.push_back("vec4");
+    uniformTypes.push_back("mat4");
+    uniformTypes.push_back("texture");
+    uniformGUI->addDropDownList("Type", uniformTypes);
+    uniformGUI->addLabelButton("Create This Uniform", false);
+    
+    uniformGUI->setColorBack(ofColor(0,100));
+    uniformGUI->setWidgetColor(OFX_UI_WIDGET_COLOR_BACK, ofColor(255,100));
+    uniformGUI->setVisible(false);
     
     shaderCurrentlyEditing = 0;
     removeOnNextUpdate = addLabelOnNextUpdate = false;
@@ -50,49 +69,12 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-    if(addLabelOnNextUpdate) {
-        
-        // make a text input at the bottom
-        // add a dropdown next to it.
-        // once the dropdown is set, remove dropdown, add slider
-        
-        gui->addTextInput("Uniform Name", "Uniform Name");
-        vector<string> uniformTypes;
-        uniformTypes.push_back("int");
-        uniformTypes.push_back("float");
-        uniformTypes.push_back("vec2");
-        uniformTypes.push_back("vec3");
-        uniformTypes.push_back("vec4");
-        uniformTypes.push_back("mat4");
-        uniformTypes.push_back("texture");
-        gui->addDropDownList("Name Type", uniformTypes);
-        gui->addLabelButton("Create This Uniform", false);
-        gui->autoSizeToFitWidgets();
-        addLabelOnNextUpdate = false;
-        
-    }
-    
-    if(removeOnNextUpdate)
-    {
-        
-        ofxUIDropDownList* uddl = (ofxUIDropDownList*) gui->getWidget("Name Type");
-        ofxUITextInput* uti = (ofxUITextInput*) gui->getWidget("Uniform Name");
-        ofxUILabelButton* ubtn = (ofxUILabelButton*) gui->getWidget("Create This Uniform");
-        
-        gui->removeWidget(uti);
-        gui->removeWidget(uddl);
-        gui->removeWidget(ubtn);
-        
-        gui->autoSizeToFitWidgets();
-        removeOnNextUpdate = false;
-        
-    }
-    
-        
 }
 
 //--------------------------------------------------------------
 void testApp::draw(){
+    
+    ofBackground(20, 20, 20);
     
     cam.begin();
     ofEnableDepthTest();
@@ -108,7 +90,7 @@ void testApp::draw(){
             {
                 case FLOAT:
                 {
-                    float *f = (float*) it->value;
+                    float* f = (float*) it->value;
                     shader.setUniform1f(it->name, *f);
                     break;
                 }
@@ -233,7 +215,7 @@ void testApp::dragEvent(ofDragInfo dragInfo){
     
     while(it != dragInfo.files.end())
     {
-        string name = *it;
+        string name = ofToLower(*it);
         if(name.find(".frag") != string::npos || name.find(".fs") != string::npos)
         {
             vector <string> ss = ofSplitString(name, ".");
@@ -258,7 +240,7 @@ void testApp::dragEvent(ofDragInfo dragInfo){
             }
             
         }
-        
+            
         if(name.find("png")!= string::npos || name.find("jpeg")!= string::npos || name.find("jpg")!= string::npos)
         {
             
@@ -288,16 +270,14 @@ void testApp::dragEvent(ofDragInfo dragInfo){
 void testApp::guiEvent(ofxUIEventArgs &e)
 {
     
-    if(ofGetElapsedTimef() - debounceValue < 0.5) {
-        return;
-    }
-    
-    debounceValue = ofGetElapsedTimef();
+//    if(ofGetElapsedTimef() - debounceValue < 0.5) {
+//        return;
+//    }
+//    
+//    debounceValue = ofGetElapsedTimef();
     
 	string name = e.widget->getName();
 	int kind = e.widget->getKind();
-    
-    cout << ofGetElapsedTimef() << endl;
     
     if(kind == OFX_UI_WIDGET_SLIDER_H)
     {
@@ -316,55 +296,55 @@ void testApp::guiEvent(ofxUIEventArgs &e)
         if( it != uniforms.end() )
         {
             if(it->type == FLOAT) {
-                static_cast<float *>(it->value)[0] = uniformSlider->getValue();
+                static_cast<float *>(it->value)[0] = uniformSlider->getValue() * uniformSlider->getMax();
             }
             
             if(it->type == INT) {
-                static_cast<int *>(it->value)[0] = uniformSlider->getValue();
+                static_cast<int *>(it->value)[0] = uniformSlider->getValue()  * uniformSlider->getMax();
             }
             
             if(it->type == VEC2) {
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'X')
                 {
-                    static_cast<float *>(it->value)[0] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[0] = uniformSlider->getValue()  * uniformSlider->getMax();
                 }
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'Y')
                 {
-                    static_cast<float *>(it->value)[1] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[1] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
             }
             
             if(it->type == VEC3) {
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'X')
                 {
-                    static_cast<float *>(it->value)[0] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[0] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'Y')
                 {
-                    static_cast<float *>(it->value)[1] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[1] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'Z')
                 {
-                    static_cast<float *>(it->value)[2] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[2] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
             }
             
             if(it->type == VEC4) {
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'X')
                 {
-                    static_cast<float *>(it->value)[0] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[0] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'Y')
                 {
-                    static_cast<float *>(it->value)[1] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[1] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'Z')
                 {
-                    static_cast<float *>(it->value)[2] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[2] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
                 if(uniformSlider->getName().at(uniformSlider->getName().size()-1) == 'W')
                 {
-                    static_cast<float *>(it->value)[3] = uniformSlider->getValue();
+                    static_cast<float *>(it->value)[3] = uniformSlider->getValue() * uniformSlider->getMax();
                 }
             }
             
@@ -376,66 +356,10 @@ void testApp::guiEvent(ofxUIEventArgs &e)
         }
     }
     
-    if(kind == OFX_UI_WIDGET_LABELBUTTON)
+    if(kind == OFX_UI_WIDGET_LABELBUTTON && e.type == MOUSE_RELEASED)
     {
         ofxUIButton *button = (ofxUIButton *) e.widget;
-        if(name == "Set Texture Name")
-        {
-            
-        }
-        if(name == "Create This Uniform")
-        {
-            ofxUIDropDownList* uddl = (ofxUIDropDownList*) gui->getWidget("Name Type");
-            ofxUITextInput* uti = (ofxUITextInput*) gui->getWidget("Uniform Name");
-            string selectedName = uddl->getSelected()[0]->getName();
-            
-            uniformObject u;
-            if( selectedName == "int") {
-                u.type = INT;
-                u.name = uti->getLabel()->getLabel();
-                u.value = new int();
-                gui->addSlider(u.name + "uniform", -500.0, 500.0, 0.0);
-            }else if( selectedName == "float") {
-                u.type = FLOAT;
-                u.name = uti->getLabel()->getLabel();
-                u.value = new float();
-                gui->addSlider(u.name + "uniform", -500.0, 500.0, 0.0);
-            }else if( selectedName == "vec2") {
-                u.type = VEC2;
-                u.name = uti->getLabel()->getLabel();
-                u.value = new float[2];
-                gui->addSlider(u.name + "uniformX", -500, 500, 0.0);
-                gui->addSlider(u.name + "uniformY", -500, 500, 0.0);
-            } else if( selectedName == "vec3") {
-                u.type = VEC3;
-                u.name = uti->getLabel()->getLabel();
-                u.value = new float[3];
-                gui->addSlider(u.name + "uniformX", -500.0, 500.0, 0.0);
-                gui->addSlider(u.name + "uniformY", -500.0, 500.0, 0.0);
-                gui->addSlider(u.name + "uniformZ", -500.0, 500.0, 0.0);
-            } else if ( selectedName == "vec4") {
-                u.type = VEC4;
-                u.name = uti->getLabel()->getLabel();
-                u.value = new float[4];
-                gui->addSlider(u.name + "uniformX", -500.0, 500.0, 0.0);
-                gui->addSlider(u.name + "uniformY", -500.0, 500.0, 0.0);
-                gui->addSlider(u.name + "uniformZ", -500.0, 500.0, 0.0);
-                gui->addSlider(u.name + "uniformW", -500.0, 500.0, 0.0);
-            } else if( selectedName == "mat4" ) {
-                u.type = MAT4;
-                u.name = uti->getLabel()->getLabel();
-                u.value = new float[16];
-            } else if( selectedName == "texture" ) {
-                u.type = TEXTURE;
-                u.name = uti->getLabel()->getLabel();
-                u.value = new int();
-                gui->addSlider(u.name + "uniform", 0.0, 16.0, 0.0);
-            }
-            uniforms.push_back(u);
-            removeOnNextUpdate = true;
-            gui->autoSizeToFitWidgets();
-        }
-        
+
         if( name == "vertex")
         {
             cout << multilineTextInput.text << endl;
@@ -491,8 +415,90 @@ void testApp::guiEvent(ofxUIEventArgs &e)
         }
         if( name == "Add Uniform")
         {
-            addLabelOnNextUpdate = true;
+            uniformGUI->setVisible(true);
+            ofxUITextInput* uti = (ofxUITextInput*) uniformGUI->getWidget("Uniform Name");
+            uti->setTextString("Uniform Name");
+            
+            ofxUIDropDownList* uddl = (ofxUIDropDownList*) uniformGUI->getWidget("Type");
         }
     }
+}
+
+void testApp::uniformGuiEvent(ofxUIEventArgs &e)
+{
     
+    string name = e.widget->getName();
+	int kind = e.widget->getKind();
+
+    
+    if(name == "Set Texture Name")
+    {
+        
+    }
+    if(name == "Create This Uniform" && e.type == MOUSE_RELEASED)
+    {
+        ofxUIDropDownList* uddl = (ofxUIDropDownList*) uniformGUI->getWidget("Type");
+        ofxUITextInput* uti = (ofxUITextInput*) uniformGUI->getWidget("Uniform Name");
+        string selectedName = uddl->getSelected()[0]->getName();
+        
+        uniformObject u;
+        if( selectedName == "int") {
+            u.type = INT;
+            u.name = uti->getLabel()->getLabel();
+            u.value = new int();
+            gui->addSlider(u.name + "uniform", -500.0, 500.0, 0.0);
+        }else if( selectedName == "float") {
+            u.type = FLOAT;
+            u.name = uti->getLabel()->getLabel();
+            u.value = new float();
+            gui->addSlider(u.name + "uniform", -500.0, 500.0, 0.0);
+        }else if( selectedName == "vec2") {
+            u.type = VEC2;
+            u.name = uti->getLabel()->getLabel();
+            u.value = new float[2];
+            gui->addSlider(u.name + "uniformX", -500, 500, 0.0);
+            gui->addSlider(u.name + "uniformY", -500, 500, 0.0);
+        } else if( selectedName == "vec3") {
+            u.type = VEC3;
+            u.name = uti->getLabel()->getLabel();
+            u.value = new float[3];
+            gui->addSlider(u.name + "uniformX", -500.0, 500.0, 0.0);
+            gui->addSlider(u.name + "uniformY", -500.0, 500.0, 0.0);
+            gui->addSlider(u.name + "uniformZ", -500.0, 500.0, 0.0);
+        } else if ( selectedName == "vec4") {
+            u.type = VEC4;
+            u.name = uti->getLabel()->getLabel();
+            u.value = new float[4];
+            gui->addSlider(u.name + "uniformX", -500.0, 500.0, 0.0);
+            gui->addSlider(u.name + "uniformY", -500.0, 500.0, 0.0);
+            gui->addSlider(u.name + "uniformZ", -500.0, 500.0, 0.0);
+            gui->addSlider(u.name + "uniformW", -500.0, 500.0, 0.0);
+        } else if( selectedName == "mat4" ) {
+            u.type = MAT4;
+            u.name = uti->getLabel()->getLabel();
+            u.value = new float[16];
+        } else if( selectedName == "texture" ) {
+            u.type = TEXTURE;
+            u.name = uti->getLabel()->getLabel();
+            u.value = new int();
+            //float w, float h, float x = 0, float y = 0
+            gui->addSlider(u.name + "uniform", 0.0, 16.0, 0.0, 200, 18, 0, 0);
+        }
+        uniforms.push_back(u);
+        removeOnNextUpdate = true;
+        gui->autoSizeToFitWidgets();
+        uniformGUI->setVisible(false);
+        
+        e.widget->setState(OFX_UI_STATE_NORMAL);
+    }
+    
+    if(kind == OFX_UI_WIDGET_LABELBUTTON && e.type == MOUSE_RELEASED)
+    {
+    
+        if( name == "Add Uniform")
+        {
+            uniformGUI->setVisible(false);
+        }
+    }
+
 }

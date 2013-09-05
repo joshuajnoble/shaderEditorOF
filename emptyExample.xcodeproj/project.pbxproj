@@ -135,6 +135,7 @@
 		ED50A69317CBE1B900AB555D /* ofxTextInputField.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTextInputField.cpp; sourceTree = "<group>"; };
 		ED50A69417CBE1B900AB555D /* ofxTextInputField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTextInputField.h; sourceTree = "<group>"; };
 		ED50A69517CBE1B900AB555D /* ofxTextInputFieldFontRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTextInputFieldFontRenderer.h; sourceTree = "<group>"; };
+		ED98930817D91D9200A41565 /* ofxUIEventType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxUIEventType.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -276,6 +277,7 @@
 				ED50A5F617CBE1A600AB555D /* ofxUICustomImageButton.h */,
 				ED50A5F717CBE1A600AB555D /* ofxUIDropDownList.h */,
 				ED50A5F817CBE1A600AB555D /* ofxUIEventArgs.h */,
+				ED98930817D91D9200A41565 /* ofxUIEventType.h */,
 				ED50A5F917CBE1A600AB555D /* ofxUIFPS.h */,
 				ED50A5FA17CBE1A600AB555D /* ofxUIFPSSlider.h */,
 				ED50A5FB17CBE1A600AB555D /* ofxUIImage.h */,
