@@ -279,6 +279,60 @@ void testApp::guiEvent(ofxUIEventArgs &e)
 	string name = e.widget->getName();
 	int kind = e.widget->getKind();
     
+    if(kind == OFX_UI_WIDGET_TEXTINPUT)
+    {
+        
+        string matInd = name.substr( name.find("uniform") + 7, name.size());
+        name = name.substr( 0, name.find("uniform"));
+        ofxUITextInput* uniformTI = (ofxUITextInput*) e.widget;
+        
+        vector<uniformObject>::iterator it = uniforms.begin();
+        while( it != uniforms.end() ) {
+            if( it->name == name ) {
+                break;
+            }
+            ++it;
+        }
+        
+        if(it->type == MAT4)
+        {
+            
+            if(matInd == "00"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(0,0) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "10"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(1,0) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "20"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(2,0) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "30"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(3,0) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "10"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(0,1) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "11"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(1,1) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "12"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(2,1) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "13"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(3,1) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "20"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(0,2) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "21"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(1,2) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "22"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(2,2) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "23"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(3,2) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "30"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(0,3) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "31"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(1,3) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "32"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(2,3) = ::atof(uniformTI->getTextString().c_str());
+            } else if(matInd == "33"){
+                (*static_cast<ofMatrix4x4 *>(it->value))(3,3) = ::atof(uniformTI->getTextString().c_str());
+            }            
+        }
+    }
+    
     if(kind == OFX_UI_WIDGET_SLIDER_H)
     {
         ofxUISlider* uniformSlider = (ofxUISlider*) e.widget;
@@ -442,6 +496,7 @@ void testApp::uniformGuiEvent(ofxUIEventArgs &e)
         string selectedName = uddl->getSelected()[0]->getName();
         
         uniformObject u;
+
         if( selectedName == "int") {
             u.type = INT;
             u.name = uti->getLabel()->getLabel();
@@ -474,7 +529,33 @@ void testApp::uniformGuiEvent(ofxUIEventArgs &e)
             gui->addSlider(u.name + "uniformZ", -500.0, 500.0, 0.0);
             gui->addSlider(u.name + "uniformW", -500.0, 500.0, 0.0);
         } else if( selectedName == "mat4" ) {
+            
             u.type = MAT4;
+            u.name = uti->getLabel()->getLabel();
+            
+            int twidth = 30, theight = 10;
+            
+            gui->addTextInput(u.name + "uniform00", "0.0", twidth, theight, 0, 0);
+            
+            gui->addWidgetEastOf( gui->addTextInput(u.name + "uniform10", "0.0", twidth, theight, 40, 0), u.name+"uniform00", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform20", "0.0", twidth, theight, 80, 0), u.name+"uniform10", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform30", "0.0", twidth, theight, 120, 0), u.name+"uniform20", true);
+            
+            gui->addTextInput(u.name + "uniform01", "0.0", twidth, theight, 0, 20);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform11", "0.0", twidth, theight, 40, 20), u.name+"uniform01", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform21", "0.0", twidth, theight, 80, 20), u.name+"uniform11", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform31", "0.0", twidth, theight, 120, 20), u.name+"uniform21", true);
+            
+            gui->addTextInput(u.name + "uniform02", "0.0", twidth, theight, 0, 40);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform12", "0.0", twidth, theight, 40, 40), u.name+"uniform02", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform22", "0.0", twidth, theight, 80, 40), u.name+"uniform12", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform32", "0.0", twidth, theight, 120, 40), u.name+"uniform22", true);
+            
+            gui->addTextInput(u.name + "uniform03", "0.0", twidth, theight, 0, 60);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform13", "0.0", twidth, theight, 40, 60), u.name+"uniform03", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform23", "0.0", twidth, theight, 80, 60), u.name+"uniform13", true);
+            gui->addWidgetEastOf(gui->addTextInput(u.name + "uniform33", "0.0", twidth, theight, 120, 60), u.name+"uniform23", true);
+            
             u.name = uti->getLabel()->getLabel();
             u.value = new float[16];
         } else if( selectedName == "texture" ) {
